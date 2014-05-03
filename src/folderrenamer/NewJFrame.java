@@ -5,7 +5,12 @@
 package folderrenamer;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -19,6 +24,7 @@ public class NewJFrame extends javax.swing.JFrame {
     public NewJFrame() {
         initComponents();
         txtLocation.setText("/Users/jaspertomas/Sites/lesson/itcourse/lessons/images/");
+        printFolderContents(new File(txtLocation.getText()));
     }
 
     /**
@@ -35,11 +41,13 @@ public class NewJFrame extends javax.swing.JFrame {
         txtSection = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        btnRename = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtLocation = new javax.swing.JTextField();
         btnExit = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtArea = new javax.swing.JTextArea();
+        btnRename = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,13 +68,6 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Section");
 
-        btnRename.setText("Rename Contents");
-        btnRename.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRenameActionPerformed(evt);
-            }
-        });
-
         jLabel3.setText("Resource Renamer for IT for Humanity IT Course");
 
         jLabel4.setText("Location");
@@ -75,6 +76,17 @@ public class NewJFrame extends javax.swing.JFrame {
         btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnExitActionPerformed(evt);
+            }
+        });
+
+        txtArea.setColumns(20);
+        txtArea.setRows(5);
+        jScrollPane1.setViewportView(txtArea);
+
+        btnRename.setText("Rename Contents");
+        btnRename.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRenameActionPerformed(evt);
             }
         });
 
@@ -102,14 +114,16 @@ public class NewJFrame extends javax.swing.JFrame {
                                     .add(layout.createSequentialGroup()
                                         .add(18, 18, 18)
                                         .add(txtLesson))))
-                            .add(jLabel3)
-                            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                                .add(org.jdesktop.layout.GroupLayout.LEADING, btnChooseFolder, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(org.jdesktop.layout.GroupLayout.LEADING, btnRename, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .add(layout.createSequentialGroup()
-                                    .add(6, 6, 6)
-                                    .add(btnExit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .add(0, 489, Short.MAX_VALUE)))
+                            .add(jLabel3))
+                        .add(0, 0, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, btnChooseFolder, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(btnRename, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(18, 18, 18)
+                        .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 283, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 190, Short.MAX_VALUE)
+                        .add(btnExit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 148, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -130,12 +144,17 @@ public class NewJFrame extends javax.swing.JFrame {
                     .add(txtSection, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel2))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnChooseFolder)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnRename)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnExit)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(btnChooseFolder)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(btnRename)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                        .add(0, 0, Short.MAX_VALUE)
+                        .add(btnExit)))
+                .addContainerGap())
         );
 
         pack();
@@ -169,12 +188,10 @@ public class NewJFrame extends javax.swing.JFrame {
             if(file==null)return;
             
             txtLocation.setText(fc.getSelectedFile().toString());
+
+            printFolderContents(new File(txtLocation.getText()));
         } 
     }//GEN-LAST:event_btnChooseFolderActionPerformed
-
-    private void btnRenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRenameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnRenameActionPerformed
 
     private void txtSectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSectionActionPerformed
         // TODO add your handling code here:
@@ -183,6 +200,25 @@ public class NewJFrame extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         System.exit(0);
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnRenameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRenameActionPerformed
+       if(txtLesson.getText().isEmpty()){
+           JOptionPane.showMessageDialog(this, "Please enter a lesson number");
+       }
+       else if(txtLesson.getText().isEmpty()){
+           JOptionPane.showMessageDialog(this, "Please enter a section number");
+       }
+       else
+       {
+           int result=JOptionPane.showConfirmDialog(this, "Are you sure?","",JOptionPane.YES_NO_OPTION);
+           if(result==JOptionPane.YES_OPTION)
+           {
+                //JOptionPane.showMessageDialog(this, "yes");
+               rename(new File(txtLocation.getText()));
+           }
+       }
+           
+    }//GEN-LAST:event_btnRenameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -226,10 +262,78 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea txtArea;
     private javax.swing.JTextField txtLesson;
     private javax.swing.JTextField txtLocation;
     private javax.swing.JTextField txtSection;
     // End of variables declaration//GEN-END:variables
 
     private JFileChooser fc,sfc;
+    void rename(File folder) {
+        String[] segments;
+        String extension;
+        String newfilename;
+        File[] children = folder.listFiles();
+        Integer counter=1;
+
+        txtArea.setText("");    
+        
+        if (children != null) {
+            for (File child : children) {
+                if(child.getName().contentEquals(".DS_Store"))continue;
+                else if(child.isDirectory())continue;
+                
+                
+                
+                segments=child.getName().split("\\.");
+                extension=segments[segments.length-1];
+                
+                if(extension.contentEquals("php"))continue;
+                else if(extension.contentEquals("html"))continue;
+                //System.out.println(child);
+                //all.add(child);
+                
+                newfilename=
+                        "l"+String.format("%2s", txtLesson.getText()).replace(' ', '0')+
+                        "s"+String.format("%2s", txtSection.getText()).replace(' ', '0')+
+                        "p"+String.format("%02d", counter)+"."+extension;
+                
+                File newfile=new File(child.getParent()+"/"+newfilename);
+                try {
+                    FileUtils.moveFile(child, newfile);
+                } catch (IOException ex) {
+                    //JOptionPane.showMessageDialog(this, "Error renaming "+file.getName());
+                    txtArea.append("error\n");
+                }
+                /*
+                if(child.renameTo(new File(child.getAbsolutePath()+"/"+newfilename)))
+                {
+                    System.out.println("success");
+                }
+                else
+                {
+                    System.out.println("fail");
+                }//*/
+                    ;
+                
+                
+                txtArea.append(newfile.getName()+"\n");
+                counter++;
+            }
+        }
+    }
+    void printFolderContents(File file) {
+	txtArea.setText("");    
+
+        File[] children = file.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                if(child.getName().contentEquals(".DS_Store"))continue;
+                else if(child.isDirectory())continue;
+                //System.out.println(child);
+                txtArea.append(child.getName()+"\n");
+            }
+        }
+    }
 }
